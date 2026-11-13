@@ -1,0 +1,12 @@
+{
+  "name": "data-freshness-panel",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "数据产品新鲜度面板（虚构任务运行记录演示）",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "gen": "python3 -I tools/generate_data.py",
+    "validate-palette": "node /tmp/claude-1000/bundled-skills/2.1.319/4538a04169126080df747281a03a05c9/dataviz/scripts/validate_palette.js"
+  }
+}

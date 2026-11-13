@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数据产品新鲜度面板</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="viz-root">
+  <!-- 顶栏 -->
+  <header class="app-header">
+    <div>
+      <h1 class="app-title">数据产品新鲜度面板</h1>
+      <p class="app-subtitle" id="metaNote">登记预期更新频率、可接受延迟与下游使用方，按本地任务运行记录评估交付状态</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn" id="themeBtn" type="button">🌙 深色</button>
+    </div>
+  </header>
+
+  <!-- 回放控制条 -->
+  <div class="replay-bar" aria-label="任务记录回放">
+    <button class="btn" id="startBtn" type="button">⏮ 起点</button>
+    <button class="btn btn-primary" id="playBtn" type="button">播放 ▶</button>
+    <button class="btn" id="resetBtn" type="button">跳到最新 ⏭</button>
+    <span class="replay-clock" id="clock">—</span>
+    <input type="range" id="timeSlider" aria-label="回放时刻" />
+    <div class="replay-speed" role="group" aria-label="回放速度">
+      <button class="btn speed-btn active" data-speed="1" type="button">1×</button>
+      <button class="btn speed-btn" data-speed="2" type="button">2×</button>
+      <button class="btn speed-btn" data-speed="4" type="button">4×</button>
+    </div>
+    <span class="replay-hint">每步推进 30 分钟，观察状态随批次到达/补齐而变化</span>
+  </div>
+
+  <!-- 筛选行：作用于下方全部内容 -->
+  <div class="filter-row">
+    <input class="search" id="filterText" type="search" placeholder="搜索表名 / 中文名 / 负责人" aria-label="搜索数据产品" />
+    <label>层级
+      <select id="filterLayer" aria-label="按数仓层级筛选"></select>
+    </label>
+    <label>等级
+      <select id="filterTier" aria-label="按重要等级筛选"></select>
+    </label>
+    <div class="chip-group" role="group" aria-label="按状态筛选">
+      <button class="active status-chip" data-status="all" type="button">全部</button>
+      <button class="status-chip" data-status="overdue" type="button">已过期</button>
+      <button class="status-chip" data-status="warning" type="button">临近超时</button>
+      <button class="status-chip" data-status="on_time" type="button">按时</button>
+      <button class="status-chip" data-status="paused" type="button">计划停更</button>
+    </div>
+    <label style="flex-direction:row;align-items:center;gap:6px">
+      <input type="checkbox" id="highImpact" style="min-width:auto" /> 仅看高影响产品（影响分 ≥ 75）
+    </label>
+    <button class="btn" id="resetFilters" type="button">重置筛选</button>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <!-- 产品登记表 -->
+  <div class="card">
+    <h2>数据产品登记与当前状态</h2>
+    <p class="card-note">点击任意行查看异常详情、最近成功批次、缺失分区与受影响报表 · <span id="rowCount"></span></p>
+    <div class="table-wrap">
+      <table id="productTable">
+        <thead>
+          <tr>
+            <th>数据产品</th><th>等级</th><th>频率 / 容忍延迟</th><th>当前状态</th>
+            <th>最近成功分区</th><th class="num">缺失分区</th><th class="num">数据滞后</th><th class="num">下游数</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 趋势图 -->
+  <div class="grid-2">
+    <div class="card" id="barCard">
+      <h2>每日状态分布</h2>
+      <p class="card-note">按自然日统计各状态产品数（计划停更单独计数，不计入 SLA 分母）</p>
+      <div class="view-toggle">
+        <button class="btn" id="barTableBtn" type="button">表格视图</button>
+      </div>
+      <div id="barChart"></div>
+    </div>
+    <div class="card">
+      <h2>SLA 按时达成率趋势</h2>
+      <p class="card-note">每日按时产品数 / 当日受评产品数（排除计划停更）</p>
+      <div id="lineChart"></div>
+    </div>
+  </div>
+
+  <!-- 热力图 -->
+  <div class="card">
+    <h2>分区健康热力图</h2>
+    <p class="card-note">每个产品每天的分区交付情况；同一分区多次重试只计一次。点击格子可打开该产品详情</p>
+    <div id="heatmap"></div>
+  </div>
+</div>
+
+<!-- 详情抽屉 -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="数据产品详情"></aside>
+
+<!-- 虚构数据 + 引擎 + 应用（无外部依赖，可离线打开） -->
+<script src="data/sample-data.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
